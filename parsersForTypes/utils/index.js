@@ -171,19 +171,34 @@ const addAllows = (joiSchema, openApiObj, state, convert) => {
 };
 
 const options = (schema, state, convert, fn) => {
-  const _schema = {
-    optOf: [
-      ...schema.$_terms.whens.map(s => {
-        const is = convertIs(s.is, s.is._valids, state, convert);
+  const options = []
+
+  schema.$_terms.whens.map(s => {
+    if(is.switch) {
+      is.switch.map((opt) => {
+        const is = convertIs(opt.is, opt.is._valids, state, convert);
         const ref = s.ref ? s.ref.key : undefined;
-        return {
+        options.push({
           is,
-          otherwise: fn(s.otherwise, schema, convert, state),
-          then: fn(s.then, schema, convert, state),
+          otherwise: fn(opt.otherwise, schema, convert, state),
+          then: fn(opt.then, schema, convert, state),
           ref
-        };
+        });
       })
-    ]
+    } else {
+      const is = convertIs(s.is, s.is._valids, state, convert);
+      const ref = s.ref ? s.ref.key : undefined;
+      options.push({
+        is,
+        otherwise: fn(s.otherwise, schema, convert, state),
+        then: fn(s.then, schema, convert, state),
+        ref
+      });
+    }
+  })  
+
+  const _schema = {
+    optOf: options
   };
   return _schema;
 };
