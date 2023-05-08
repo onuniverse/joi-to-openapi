@@ -174,8 +174,8 @@ const options = (schema, state, convert, fn) => {
   const options = []
 
   schema.$_terms.whens.map(s => {
-    if(is.switch) {
-      is.switch.map((opt) => {
+    if(s.switch) {
+      s.switch.map((opt) => {
         const is = convertIs(opt.is, opt.is._valids, state, convert);
         const ref = s.ref ? s.ref.key : undefined;
         options.push({
